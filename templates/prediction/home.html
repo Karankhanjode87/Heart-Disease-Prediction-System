@@ -1,0 +1,819 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Heart Disease Prediction System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+    background: #f4f7fb;
+    color: #222;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Light heart background watermark */
+body::before {
+    content: "";
+    position: fixed;
+    width: 450px;
+    height: 450px;
+
+    background-image: url("{% static 'image/heart.png' %}");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    opacity: 0.06;
+
+    right: 3%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    z-index: 0;
+    pointer-events: none;
+}
+        /* =========================
+           USER BAR
+        ========================= */
+
+        .user-bar {
+            background: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .username {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .logout-btn {
+            background: #d32f2f;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+              background: linear-gradient(135deg, #b71c1c, #e53935);
+              color: white;
+              padding: 30px 20px;
+              text-align: center;
+              position: relative;
+              z-index: 1;
+       }
+        
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            color: #b71c1c;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #444;
+        }
+
+        input,
+        select {
+            padding: 11px 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #e53935;
+            box-shadow: 0 0 4px rgba(229,57,53,0.25);
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .button-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 13px 35px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #b71c1c;
+        }
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+            text-align: center;
+        }
+
+        .result-danger {
+            border-left: 6px solid #d32f2f;
+        }
+
+        .result-safe {
+            border-left: 6px solid #2e7d32;
+        }
+
+        .result h2 {
+            margin-bottom: 12px;
+        }
+
+        .result-message {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .probability {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .user-bar {
+                padding: 12px 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         USER ACCOUNT BAR
+    ========================= -->
+
+    <div style="text-align: right; padding: 15px 30px; background: white;">
+
+    <span style="font-weight: bold;">
+        Welcome, {{ request.user.username }}
+    </span>
+
+    &nbsp;&nbsp;
+
+    <a href="{% url 'feedback' %}"
+       style="
+       text-decoration: none;
+       background: #1976d2;
+       color: white;
+       padding: 8px 16px;
+       border-radius: 6px;
+       font-weight: bold;
+       ">
+        💬 Feedback
+    </a>
+      <a href="{% url 'history' %}"
+       style="
+       text-decoration: none;
+       background: #6a1b9a;
+       color: white;
+       padding: 8px 16px;
+       border-radius: 6px;
+       font-weight: bold;
+       ">
+      📋 History
+   </a>
+
+    &nbsp;&nbsp;
+
+    <a href="{% url 'logout' %}"
+       style="
+       text-decoration: none;
+       background: #d32f2f;
+       color: white;
+       padding: 8px 16px;
+       border-radius: 6px;
+       font-weight: bold;
+       ">
+        Logout
+    </a>
+
+</div>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <div class="header">
+
+        <h1>
+           <img src="{% static 'image/heart.png' %}" 
+            alt="Heart" 
+            style="width:45px; height:60px; vertical-align:middle; margin-right:10px;">
+            Heart Disease Prediction System
+        </h1>
+
+        <p>
+            Machine Learning Based Risk Prediction
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN CONTAINER
+    ========================= -->
+
+    <div class="container">
+
+        <div class="card">
+
+            <h2>Patient Information</h2>
+            {% if error %}
+              <div style="
+               background: #ffebee;
+               color: #c62828;
+               padding: 12px 15px;
+               border-radius: 7px;
+               margin-bottom: 20px;
+               border-left: 5px solid #d32f2f;
+               font-weight: bold;
+               ">
+                ⚠️ {{ error }}
+             </div>
+            {% endif %}
+            <div style="
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px 18px;
+    border-left: 5px solid #ffc107;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+">
+    <strong>⚠️ Important Disclaimer</strong><br>
+
+    This application provides an estimated heart disease risk based on
+    the information entered and the underlying machine learning model.
+    It is intended for educational and informational purposes only and
+    <strong>is not a medical diagnosis or a substitute for professional
+    medical advice.</strong>
+
+    Do not make medical decisions based solely on this prediction.
+    Please consult a qualified healthcare professional for proper
+    evaluation and diagnosis.
+</div>
+
+
+            <!-- =========================
+                 PREDICTION FORM
+            ========================= -->
+
+            <form method="POST" action="{% url 'prediction' %}">
+
+                {% csrf_token %}
+
+
+                <div class="form-grid">
+                    <div class="form-group">
+                     <label>Patient Name</label>
+                     <input type="text" name="Patient_Name" placeholder="Enter patient name" required>
+                </div>
+
+
+                    <!-- Age -->
+
+                    <div class="form-group">
+
+                        <label>Age</label>
+
+                        <input
+                            type="number"
+                            name="Age"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Gender -->
+
+                    <div class="form-group">
+
+                        <label>Gender</label>
+
+                        <select name="Gender">
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Weight -->
+
+                    <div class="form-group">
+
+                        <label>Weight</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="Weight"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Height -->
+
+                    <div class="form-group">
+
+                        <label>Height</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="Height"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- BMI -->
+
+                    <div class="form-group">
+
+                        <label>BMI</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="BMI"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Smoking -->
+
+                    <div class="form-group">
+
+                        <label>Smoking</label>
+
+                        <select name="Smoking">
+
+                            <option value="Yes">
+                                Yes
+                            </option>
+
+                            <option value="No">
+                                No
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Alcohol -->
+
+                    <div class="form-group">
+
+                        <label>Alcohol Intake</label>
+
+                        <select name="Alcohol_Intake">
+
+                            <option value="None">
+                                None
+                            </option>
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Moderate">
+                                Moderate
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                            <option value="Unknown">
+                                Unknown
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Physical Activity -->
+
+                    <div class="form-group">
+
+                        <label>Physical Activity</label>
+
+                        <select name="Physical_Activity">
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Moderate">
+                                Moderate
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Diet -->
+
+                    <div class="form-group">
+
+                        <label>Diet</label>
+
+                        <select name="Diet">
+
+                            <option value="Poor">
+                                Poor
+                            </option>
+
+                            <option value="Average">
+                                Average
+                            </option>
+
+                            <option value="Good">
+                                Good
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Stress -->
+
+                    <div class="form-group">
+
+                        <label>Stress Level</label>
+
+                        <select name="Stress_Level">
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                            <option value="Moderate">
+                                Moderate
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Hypertension -->
+
+                    <div class="form-group">
+
+                        <label>Hypertension</label>
+
+                        <select name="Hypertension">
+
+                            <option value="0">
+                                No
+                            </option>
+
+                            <option value="1">
+                                Yes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Diabetes -->
+
+                    <div class="form-group">
+
+                        <label>Diabetes</label>
+
+                        <select name="Diabetes">
+
+                            <option value="0">
+                                No
+                            </option>
+
+                            <option value="1">
+                                Yes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Hyperlipidemia -->
+
+                    <div class="form-group">
+
+                        <label>Hyperlipidemia</label>
+
+                        <select name="Hyperlipidemia">
+
+                            <option value="0">
+                                No
+                            </option>
+
+                            <option value="1">
+                                Yes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Family History -->
+
+                    <div class="form-group">
+
+                        <label>Family History</label>
+
+                        <select name="Family_History">
+
+                            <option value="0">
+                                No
+                            </option>
+
+                            <option value="1">
+                                Yes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Previous Heart Attack -->
+
+                    <div class="form-group">
+
+                        <label>Previous Heart Attack</label>
+
+                        <select name="Previous_Heart_Attack">
+
+                            <option value="0">
+                                No
+                            </option>
+
+                            <option value="1">
+                                Yes
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Systolic BP -->
+
+                    <div class="form-group">
+
+                        <label>Systolic BP</label>
+
+                        <input
+                            type="number"
+                            name="Systolic_BP"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Diastolic BP -->
+
+                    <div class="form-group">
+
+                        <label>Diastolic BP</label>
+
+                        <input
+                            type="number"
+                            name="Diastolic_BP"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Heart Rate -->
+
+                    <div class="form-group">
+
+                        <label>Heart Rate</label>
+
+                        <input
+                            type="number"
+                            name="Heart_Rate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Blood Sugar -->
+
+                    <div class="form-group">
+
+                        <label>Blood Sugar Fasting</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="Blood_Sugar_Fasting"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Cholesterol -->
+
+                    <div class="form-group">
+
+                        <label>Total Cholesterol</label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="Cholesterol_Total"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Predict Button -->
+
+                <div class="button-container">
+
+                    <button type="submit">
+                        🔍 Predict Heart Disease
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <div class="footer">
+
+        Heart Disease Prediction System • Django + Machine Learning
+
+    </div>
+
+</body>
+</html>

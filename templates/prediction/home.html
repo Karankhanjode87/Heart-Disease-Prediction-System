@@ -1,13 +1,20 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Heart Disease Prediction System</title>
 
     <style>
+
+        /* =========================
+           GLOBAL
+        ========================= */
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,102 +23,210 @@
         }
 
         body {
-    background: #f4f7fb;
-    color: #222;
-    position: relative;
-    overflow-x: hidden;
-}
+            background: #f4f7fb;
+            color: #222;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-/* Light heart background watermark */
-body::before {
-    content: "";
-    position: fixed;
-    width: 450px;
-    height: 450px;
 
-    background-image: url("{% static 'image/heart.png' %}");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+        /* =========================
+           HEART WATERMARK
+        ========================= */
 
-    opacity: 0.06;
+        body::before {
+            content: "";
+            position: fixed;
 
-    right: 3%;
-    top: 50%;
-    transform: translateY(-50%);
+            width: 450px;
+            height: 450px;
 
-    z-index: 0;
-    pointer-events: none;
-}
+            background-image: url("{% static 'image/heart.png' %}");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+
+            opacity: 0.06;
+
+            right: 3%;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            z-index: 0;
+            pointer-events: none;
+        }
+
+
         /* =========================
            USER BAR
         ========================= */
 
         .user-bar {
             background: white;
-            padding: 12px 30px;
+
+            padding: 15px 30px;
+
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            gap: 15px;
+
+            gap: 20px;
+
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+            position: relative;
+            z-index: 10;
         }
 
-        .username {
+
+        /* WELCOME TEXT */
+
+        .welcome-text {
             font-weight: bold;
             color: #444;
+
+            white-space: nowrap;
         }
+
+
+        /* BUTTON GROUP */
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: nowrap;
+        }
+
+
+        /* TOP BUTTON COMMON */
+
+        .top-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 100px;
+
+            padding: 9px 16px;
+
+            border-radius: 7px;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+
+            transition: 0.2s;
+        }
+
+
+        /* FEEDBACK */
+
+        .feedback-btn {
+            background: #1976d2;
+        }
+
+        .feedback-btn:hover {
+            background: #1565c0;
+        }
+
+
+        /* HISTORY */
+
+        .history-btn {
+            background: #6a1b9a;
+        }
+
+        .history-btn:hover {
+            background: #4a148c;
+        }
+
+
+        /* LOGOUT */
 
         .logout-btn {
             background: #d32f2f;
-            color: white;
-            padding: 9px 18px;
-            border-radius: 7px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
         }
 
         .logout-btn:hover {
             background: #b71c1c;
         }
 
+
         /* =========================
            HEADER
         ========================= */
 
         .header {
-              background: linear-gradient(135deg, #b71c1c, #e53935);
-              color: white;
-              padding: 30px 20px;
-              text-align: center;
-              position: relative;
-              z-index: 1;
-       }
-        
+            background: linear-gradient(135deg, #b71c1c, #e53935);
+
+            color: white;
+
+            padding: 30px 20px;
+
+            text-align: center;
+
+            position: relative;
+            z-index: 1;
+        }
+
 
         .header h1 {
             font-size: 32px;
+
             margin-bottom: 8px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            flex-wrap: wrap;
         }
+
+
+        .header-heart {
+            width: 45px;
+            height: 60px;
+
+            object-fit: contain;
+
+            margin-right: 10px;
+        }
+
 
         .header p {
             font-size: 15px;
+
             opacity: 0.9;
         }
 
+
         /* =========================
-           CONTAINER
+           MAIN CONTAINER
         ========================= */
 
         .container {
             max-width: 1100px;
+
             margin: 30px auto;
+
             padding: 0 20px;
+
             position: relative;
+
             z-index: 1;
         }
-        
+
 
         /* =========================
            CARD
@@ -119,17 +234,69 @@ body::before {
 
         .card {
             background: white;
+
             border-radius: 14px;
+
             padding: 28px;
+
             margin-bottom: 25px;
+
             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         }
 
+
         .card h2 {
             color: #b71c1c;
+
             margin-bottom: 20px;
+
             font-size: 22px;
         }
+
+
+        /* =========================
+           ERROR MESSAGE
+        ========================= */
+
+        .error-message {
+            background: #ffebee;
+
+            color: #c62828;
+
+            padding: 12px 15px;
+
+            border-radius: 7px;
+
+            margin-bottom: 20px;
+
+            border-left: 5px solid #d32f2f;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           DISCLAIMER
+        ========================= */
+
+        .disclaimer {
+            background: #fff3cd;
+
+            color: #856404;
+
+            padding: 15px 18px;
+
+            border-left: 5px solid #ffc107;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
 
         /* =========================
            FORM
@@ -137,60 +304,91 @@ body::before {
 
         .form-grid {
             display: grid;
+
             grid-template-columns: repeat(2, 1fr);
+
             gap: 18px 25px;
         }
 
+
         .form-group {
             display: flex;
+
             flex-direction: column;
         }
 
+
         .form-group label {
             font-weight: bold;
+
             margin-bottom: 7px;
+
             color: #444;
         }
 
+
         input,
         select {
+            width: 100%;
+
             padding: 11px 12px;
+
             border: 1px solid #ccc;
+
             border-radius: 7px;
+
             font-size: 14px;
+
             background: white;
         }
+
 
         input:focus,
         select:focus {
             outline: none;
+
             border-color: #e53935;
+
             box-shadow: 0 0 4px rgba(229,57,53,0.25);
         }
 
+
         /* =========================
-           BUTTON
+           PREDICT BUTTON
         ========================= */
 
         .button-container {
             text-align: center;
+
             margin-top: 25px;
         }
 
-        button {
+
+        .predict-btn {
             background: #d32f2f;
+
             color: white;
+
             border: none;
+
             padding: 13px 35px;
+
             border-radius: 8px;
+
             font-size: 16px;
+
             font-weight: bold;
+
             cursor: pointer;
+
+            transition: 0.2s;
         }
 
-        button:hover {
+
+        .predict-btn:hover {
             background: #b71c1c;
         }
+
 
         /* =========================
            RESULT
@@ -200,28 +398,37 @@ body::before {
             text-align: center;
         }
 
+
         .result-danger {
             border-left: 6px solid #d32f2f;
         }
+
 
         .result-safe {
             border-left: 6px solid #2e7d32;
         }
 
+
         .result h2 {
             margin-bottom: 12px;
         }
 
+
         .result-message {
             font-size: 20px;
+
             font-weight: bold;
+
             margin: 12px 0;
         }
 
+
         .probability {
             font-size: 18px;
+
             margin-top: 10px;
         }
+
 
         /* =========================
            FOOTER
@@ -229,85 +436,237 @@ body::before {
 
         .footer {
             text-align: center;
+
             padding: 25px;
+
             color: #777;
+
             font-size: 13px;
+
+            position: relative;
+
+            z-index: 1;
         }
 
+
         /* =========================
-           MOBILE
+           TABLET
         ========================= */
 
-        @media (max-width: 700px) {
+        @media (max-width: 800px) {
+
+            .user-bar {
+                justify-content: center;
+
+                flex-wrap: wrap;
+            }
 
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .header h1 {
-                font-size: 25px;
-            }
-
-            .user-bar {
-                padding: 12px 15px;
-            }
         }
 
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 0;
+            }
+
+
+            /* USER BAR */
+
+            .user-bar {
+                padding: 15px 10px;
+
+                flex-direction: column;
+
+                justify-content: center;
+
+                gap: 12px;
+            }
+
+
+            .welcome-text {
+                text-align: center;
+
+                width: 100%;
+            }
+
+
+            .user-actions {
+                width: 100%;
+
+                display: flex;
+
+                justify-content: center;
+
+                gap: 8px;
+
+                flex-wrap: wrap;
+            }
+
+
+            .top-btn {
+                min-width: 90px;
+
+                padding: 9px 12px;
+
+                font-size: 13px;
+            }
+
+
+            /* HEADER */
+
+            .header {
+                padding: 25px 15px;
+            }
+
+
+            .header h1 {
+                font-size: 25px;
+
+                line-height: 1.3;
+            }
+
+
+            .header-heart {
+                width: 35px;
+
+                height: 45px;
+
+                margin-right: 6px;
+            }
+
+
+            .header p {
+                font-size: 14px;
+            }
+
+
+            /* CONTAINER */
+
+            .container {
+                width: 100%;
+
+                margin: 20px auto;
+
+                padding: 0 10px;
+            }
+
+
+            /* CARD */
+
+            .card {
+                padding: 18px;
+
+                border-radius: 10px;
+            }
+
+
+            .card h2 {
+                font-size: 20px;
+            }
+
+
+            /* FORM */
+
+            .form-grid {
+                grid-template-columns: 1fr;
+
+                gap: 16px;
+            }
+
+
+            /* PREDICT BUTTON */
+
+            .predict-btn {
+                width: 100%;
+
+                padding: 13px 20px;
+
+                font-size: 15px;
+            }
+
+
+            /* DISCLAIMER */
+
+            .disclaimer {
+                font-size: 13px;
+
+                padding: 13px 15px;
+            }
+
+
+            /* FOOTER */
+
+            .footer {
+                padding: 20px 10px;
+
+                font-size: 12px;
+            }
+
+        }
+        @media (max-width: 600px) {
+    body {
+        background: yellow !important;
+    }
+}
+
     </style>
+
 </head>
 
+
 <body>
+
 
     <!-- =========================
          USER ACCOUNT BAR
     ========================= -->
 
-    <div style="text-align: right; padding: 15px 30px; background: white;">
+    <div class="user-bar">
 
-    <span style="font-weight: bold;">
-        Welcome, {{ request.user.username }}
-    </span>
+        <div class="welcome-text">
+            Welcome, {{ request.user.username }}
+        </div>
 
-    &nbsp;&nbsp;
 
-    <a href="{% url 'feedback' %}"
-       style="
-       text-decoration: none;
-       background: #1976d2;
-       color: white;
-       padding: 8px 16px;
-       border-radius: 6px;
-       font-weight: bold;
-       ">
-        💬 Feedback
-    </a>
-      <a href="{% url 'history' %}"
-       style="
-       text-decoration: none;
-       background: #6a1b9a;
-       color: white;
-       padding: 8px 16px;
-       border-radius: 6px;
-       font-weight: bold;
-       ">
-      📋 History
-   </a>
+        <div class="user-actions">
 
-    &nbsp;&nbsp;
+            <a href="{% url 'feedback' %}"
+               class="top-btn feedback-btn">
 
-    <a href="{% url 'logout' %}"
-       style="
-       text-decoration: none;
-       background: #d32f2f;
-       color: white;
-       padding: 8px 16px;
-       border-radius: 6px;
-       font-weight: bold;
-       ">
-        Logout
-    </a>
+                💬 Feedback
 
-</div>
+            </a>
+
+
+            <a href="{% url 'history' %}"
+               class="top-btn history-btn">
+
+                📋 History
+
+            </a>
+
+
+            <a href="{% url 'logout' %}"
+               class="top-btn logout-btn">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+
 
     <!-- =========================
          HEADER
@@ -316,11 +675,17 @@ body::before {
     <div class="header">
 
         <h1>
-           <img src="{% static 'image/heart.png' %}" 
-            alt="Heart" 
-            style="width:45px; height:60px; vertical-align:middle; margin-right:10px;">
+
+            <img
+                src="{% static 'image/heart.png' %}"
+                alt="Heart"
+                class="header-heart"
+            >
+
             Heart Disease Prediction System
+
         </h1>
+
 
         <p>
             Machine Learning Based Risk Prediction
@@ -329,50 +694,66 @@ body::before {
     </div>
 
 
+
     <!-- =========================
          MAIN CONTAINER
     ========================= -->
 
     <div class="container">
 
+
         <div class="card">
 
-            <h2>Patient Information</h2>
+
+            <h2>
+                Patient Information
+            </h2>
+
+
+
+            <!-- ERROR -->
+
             {% if error %}
-              <div style="
-               background: #ffebee;
-               color: #c62828;
-               padding: 12px 15px;
-               border-radius: 7px;
-               margin-bottom: 20px;
-               border-left: 5px solid #d32f2f;
-               font-weight: bold;
-               ">
-                ⚠️ {{ error }}
-             </div>
+
+                <div class="error-message">
+
+                    ⚠️ {{ error }}
+
+                </div>
+
             {% endif %}
-            <div style="
-    background: #fff3cd;
-    color: #856404;
-    padding: 15px 18px;
-    border-left: 5px solid #ffc107;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.6;
-">
-    <strong>⚠️ Important Disclaimer</strong><br>
 
-    This application provides an estimated heart disease risk based on
-    the information entered and the underlying machine learning model.
-    It is intended for educational and informational purposes only and
-    <strong>is not a medical diagnosis or a substitute for professional
-    medical advice.</strong>
 
-    Do not make medical decisions based solely on this prediction.
-    Please consult a qualified healthcare professional for proper
-    evaluation and diagnosis.
-</div>
+
+            <!-- DISCLAIMER -->
+
+            <div class="disclaimer">
+
+                <strong>⚠️ Important Disclaimer</strong>
+
+                <br>
+
+                This application provides an estimated heart disease risk
+                based on the information entered and the underlying machine
+                learning model.
+
+                It is intended for educational and informational purposes only
+                and
+
+                <strong>
+                    is not a medical diagnosis or a substitute for professional
+                    medical advice.
+                </strong>
+
+                <br>
+
+                Do not make medical decisions based solely on this prediction.
+
+                Please consult a qualified healthcare professional for proper
+                evaluation and diagnosis.
+
+            </div>
+
 
 
             <!-- =========================
@@ -385,17 +766,34 @@ body::before {
 
 
                 <div class="form-grid">
-                    <div class="form-group">
-                     <label>Patient Name</label>
-                     <input type="text" name="Patient_Name" placeholder="Enter patient name" required>
-                </div>
 
 
-                    <!-- Age -->
+                    <!-- PATIENT NAME -->
 
                     <div class="form-group">
 
-                        <label>Age</label>
+                        <label>
+                            Patient Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="Patient_Name"
+                            placeholder="Enter patient name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- AGE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Age
+                        </label>
 
                         <input
                             type="number"
@@ -406,11 +804,14 @@ body::before {
                     </div>
 
 
-                    <!-- Gender -->
+
+                    <!-- GENDER -->
 
                     <div class="form-group">
 
-                        <label>Gender</label>
+                        <label>
+                            Gender
+                        </label>
 
                         <select name="Gender">
 
@@ -427,11 +828,14 @@ body::before {
                     </div>
 
 
-                    <!-- Weight -->
+
+                    <!-- WEIGHT -->
 
                     <div class="form-group">
 
-                        <label>Weight</label>
+                        <label>
+                            Weight
+                        </label>
 
                         <input
                             type="number"
@@ -443,11 +847,14 @@ body::before {
                     </div>
 
 
-                    <!-- Height -->
+
+                    <!-- HEIGHT -->
 
                     <div class="form-group">
 
-                        <label>Height</label>
+                        <label>
+                            Height
+                        </label>
 
                         <input
                             type="number"
@@ -459,11 +866,14 @@ body::before {
                     </div>
 
 
+
                     <!-- BMI -->
 
                     <div class="form-group">
 
-                        <label>BMI</label>
+                        <label>
+                            BMI
+                        </label>
 
                         <input
                             type="number"
@@ -475,11 +885,14 @@ body::before {
                     </div>
 
 
-                    <!-- Smoking -->
+
+                    <!-- SMOKING -->
 
                     <div class="form-group">
 
-                        <label>Smoking</label>
+                        <label>
+                            Smoking
+                        </label>
 
                         <select name="Smoking">
 
@@ -496,11 +909,14 @@ body::before {
                     </div>
 
 
-                    <!-- Alcohol -->
+
+                    <!-- ALCOHOL -->
 
                     <div class="form-group">
 
-                        <label>Alcohol Intake</label>
+                        <label>
+                            Alcohol Intake
+                        </label>
 
                         <select name="Alcohol_Intake">
 
@@ -529,11 +945,14 @@ body::before {
                     </div>
 
 
-                    <!-- Physical Activity -->
+
+                    <!-- PHYSICAL ACTIVITY -->
 
                     <div class="form-group">
 
-                        <label>Physical Activity</label>
+                        <label>
+                            Physical Activity
+                        </label>
 
                         <select name="Physical_Activity">
 
@@ -554,11 +973,14 @@ body::before {
                     </div>
 
 
-                    <!-- Diet -->
+
+                    <!-- DIET -->
 
                     <div class="form-group">
 
-                        <label>Diet</label>
+                        <label>
+                            Diet
+                        </label>
 
                         <select name="Diet">
 
@@ -579,11 +1001,14 @@ body::before {
                     </div>
 
 
-                    <!-- Stress -->
+
+                    <!-- STRESS -->
 
                     <div class="form-group">
 
-                        <label>Stress Level</label>
+                        <label>
+                            Stress Level
+                        </label>
 
                         <select name="Stress_Level">
 
@@ -604,11 +1029,14 @@ body::before {
                     </div>
 
 
-                    <!-- Hypertension -->
+
+                    <!-- HYPERTENSION -->
 
                     <div class="form-group">
 
-                        <label>Hypertension</label>
+                        <label>
+                            Hypertension
+                        </label>
 
                         <select name="Hypertension">
 
@@ -625,11 +1053,14 @@ body::before {
                     </div>
 
 
-                    <!-- Diabetes -->
+
+                    <!-- DIABETES -->
 
                     <div class="form-group">
 
-                        <label>Diabetes</label>
+                        <label>
+                            Diabetes
+                        </label>
 
                         <select name="Diabetes">
 
@@ -646,11 +1077,14 @@ body::before {
                     </div>
 
 
-                    <!-- Hyperlipidemia -->
+
+                    <!-- HYPERLIPIDEMIA -->
 
                     <div class="form-group">
 
-                        <label>Hyperlipidemia</label>
+                        <label>
+                            Hyperlipidemia
+                        </label>
 
                         <select name="Hyperlipidemia">
 
@@ -667,11 +1101,14 @@ body::before {
                     </div>
 
 
-                    <!-- Family History -->
+
+                    <!-- FAMILY HISTORY -->
 
                     <div class="form-group">
 
-                        <label>Family History</label>
+                        <label>
+                            Family History
+                        </label>
 
                         <select name="Family_History">
 
@@ -688,11 +1125,14 @@ body::before {
                     </div>
 
 
-                    <!-- Previous Heart Attack -->
+
+                    <!-- PREVIOUS HEART ATTACK -->
 
                     <div class="form-group">
 
-                        <label>Previous Heart Attack</label>
+                        <label>
+                            Previous Heart Attack
+                        </label>
 
                         <select name="Previous_Heart_Attack">
 
@@ -709,11 +1149,14 @@ body::before {
                     </div>
 
 
-                    <!-- Systolic BP -->
+
+                    <!-- SYSTOLIC BP -->
 
                     <div class="form-group">
 
-                        <label>Systolic BP</label>
+                        <label>
+                            Systolic BP
+                        </label>
 
                         <input
                             type="number"
@@ -724,11 +1167,14 @@ body::before {
                     </div>
 
 
-                    <!-- Diastolic BP -->
+
+                    <!-- DIASTOLIC BP -->
 
                     <div class="form-group">
 
-                        <label>Diastolic BP</label>
+                        <label>
+                            Diastolic BP
+                        </label>
 
                         <input
                             type="number"
@@ -739,11 +1185,14 @@ body::before {
                     </div>
 
 
-                    <!-- Heart Rate -->
+
+                    <!-- HEART RATE -->
 
                     <div class="form-group">
 
-                        <label>Heart Rate</label>
+                        <label>
+                            Heart Rate
+                        </label>
 
                         <input
                             type="number"
@@ -754,11 +1203,14 @@ body::before {
                     </div>
 
 
-                    <!-- Blood Sugar -->
+
+                    <!-- BLOOD SUGAR -->
 
                     <div class="form-group">
 
-                        <label>Blood Sugar Fasting</label>
+                        <label>
+                            Blood Sugar Fasting
+                        </label>
 
                         <input
                             type="number"
@@ -770,11 +1222,14 @@ body::before {
                     </div>
 
 
-                    <!-- Cholesterol -->
+
+                    <!-- CHOLESTEROL -->
 
                     <div class="form-group">
 
-                        <label>Total Cholesterol</label>
+                        <label>
+                            Total Cholesterol
+                        </label>
 
                         <input
                             type="number"
@@ -785,24 +1240,37 @@ body::before {
 
                     </div>
 
+
                 </div>
 
 
-                <!-- Predict Button -->
+
+                <!-- =========================
+                     PREDICT BUTTON
+                ========================= -->
 
                 <div class="button-container">
 
-                    <button type="submit">
+                    <button
+                        type="submit"
+                        class="predict-btn"
+                    >
+
                         🔍 Predict Heart Disease
+
                     </button>
 
                 </div>
 
+
             </form>
+
 
         </div>
 
+
     </div>
+
 
 
     <!-- =========================
@@ -811,9 +1279,12 @@ body::before {
 
     <div class="footer">
 
-        Heart Disease Prediction System • Django + Machine Learning
+        Heart Disease Prediction System
+        • Django + Machine Learning
 
     </div>
 
+
 </body>
+
 </html>

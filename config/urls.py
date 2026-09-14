@@ -14,7 +14,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     # Register page
-    path("", register, name="register"),
+    path("", home, name="home"),
     path("register/", register, name="register"),
 
     # Patient prediction page

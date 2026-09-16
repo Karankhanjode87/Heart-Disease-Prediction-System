@@ -151,3 +151,9 @@ User accounts, prediction records and feedback are stored using PostgreSQL.
                      │
                      ▼
              Prediction History
+
+## 📸 Application Screenshots
+
+### Patient Prediction Form
+
+![Patient Prediction Form](static/Screenshots/home.png)
